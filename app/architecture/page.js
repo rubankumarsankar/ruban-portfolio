@@ -16,7 +16,7 @@ export default function Architecture() {
       <main className="flex-1 flex flex-col h-full overflow-hidden relative">
         <Header title="ROOT // SYSTEM_ARCH_LOG" />
 
-        <div className="flex-1 overflow-y-auto px-8 py-12 lg:px-12 relative z-10 bg-[#0d1117]">
+        <div className="flex-1 overflow-y-auto px-4 py-8 md:px-12 relative z-10 bg-[#0d1117]">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

@@ -20,6 +20,9 @@ export const metadata = {
     template: `%s | ${portfolioData.personalInfo.name}`,
   },
   description: portfolioData.home.heroDescription,
+  icons: {
+    icon: "/favicon.png",
+  },
   keywords: ["Python Backend Developer", "FastAPI", "Next.js Portfolio", "Software Engineer Chennai", "Data Engineering"],
   authors: [{ name: portfolioData.personalInfo.name }],
   creator: portfolioData.personalInfo.name,

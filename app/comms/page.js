@@ -9,6 +9,20 @@ import Header from "../../components/Header";
 export default function Comms() {
   const [bootSequence, setBootSequence] = useState(0);
 
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: ""
+  });
+
+  const handleClear = () => {
+    setFormData({
+      name: "",
+      email: "",
+      message: ""
+    });
+  };
+
   useEffect(() => {
     const timeouts = [
       setTimeout(() => setBootSequence(1), 400),
@@ -28,7 +42,7 @@ export default function Comms() {
       <main className="flex-1 flex flex-col h-full overflow-hidden relative">
         <Header title="ROOT // SECURE_COMMS_LINK" />
 
-        <div className="flex-1 overflow-y-auto p-6 lg:p-12 relative z-10 bg-[#0d1117]">
+        <div className="flex-1 overflow-y-auto p-4 md:p-12 relative z-10 bg-[#0d1117]">
           <div className="min-h-full w-full flex items-center justify-center py-8">
             <motion.div
               initial={{ opacity: 0, scale: 0.98 }}
@@ -82,6 +96,8 @@ export default function Comms() {
                       <span className="text-gray-500">&gt;_</span>
                       <input
                         type="text"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="Enter identifier designation"
                         className="flex-1 bg-transparent border border-[#1f2937] p-3 text-sm text-gray-200 placeholder-gray-700 focus:outline-none focus:border-[#38bdf8] transition-colors"
                       />
@@ -96,6 +112,8 @@ export default function Comms() {
                       <span className="text-gray-500">&gt;_</span>
                       <input
                         type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="Enter return vector"
                         className="flex-1 bg-transparent border border-[#1f2937] p-3 text-sm text-gray-200 placeholder-gray-700 focus:outline-none focus:border-[#38bdf8] transition-colors"
                       />
@@ -109,6 +127,8 @@ export default function Comms() {
                     <div className="flex items-start gap-4">
                       <span className="text-gray-500 pt-3">&gt;_</span>
                       <textarea
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         placeholder="Input payload data ..."
                         className="flex-1 bg-transparent border border-[#1f2937] p-4 h-32 resize-none text-sm text-gray-200 placeholder-gray-700 focus:outline-none focus:border-[#38bdf8] transition-colors"
                       />
@@ -125,6 +145,8 @@ export default function Comms() {
                       [SEND_PACKET]
                     </motion.button>
                     <motion.button 
+                      type="button"
+                      onClick={handleClear}
                       whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.05)" }}
                       whileTap={{ scale: 0.95 }}
                       className="border border-[#1f2937] text-white px-6 py-3 text-sm font-bold tracking-widest flex items-center justify-center gap-3 transition-colors sm:w-auto w-full"

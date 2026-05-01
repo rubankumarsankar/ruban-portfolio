@@ -29,8 +29,8 @@ export default function Projects() {
 
         <Header title="ROOT // PROJECTS_LIBRARY" />
 
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-8 lg:p-12 relative z-10">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
+          <div className="p-6 md:p-12 relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

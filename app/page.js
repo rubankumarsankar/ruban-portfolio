@@ -44,7 +44,7 @@ export default function Home() {
         <Header title="ROOT_ACCESS // TERMINAL_V1" />
 
         <div className="flex-1 overflow-y-auto">
-          <div className="p-12">
+          <div className="p-6 md:p-12">
             {/* Hero Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 h-auto min-h-[50vh] items-center">
               {/* Left Col: Text */}
