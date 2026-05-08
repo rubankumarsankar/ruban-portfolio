@@ -61,7 +61,7 @@ export default function Projects() {
                     className="bg-[#111520] border border-[#1f2937] p-8 flex flex-col relative group transition-all duration-300"
                   >
                     <div className="absolute top-6 right-6 text-[10px] text-gray-500 tracking-[0.2em] font-mono group-hover:text-[#38bdf8] transition-colors">
-                      {project.id} // 13.0827 // {project.node}
+                      {project.id} {' // 13.0827 // '} {project.node}
                     </div>
                     <h3 className="text-2xl font-bold font-sans mb-1">
                       {project.title}
@@ -118,7 +118,7 @@ export default function Projects() {
                 className="border border-[#1f2937] bg-[#0d1117]/80 backdrop-blur-sm p-8 relative transition-all duration-500 group"
               >
                 <div className="absolute top-8 right-8 text-[10px] text-gray-400 tracking-[0.2em] font-mono z-30 group-hover:text-[#38bdf8] transition-colors">
-                  {advancedProject.id} // 13.0827 // {advancedProject.node}
+                  {advancedProject.id} {' // 13.0827 // '} {advancedProject.node}
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-12">

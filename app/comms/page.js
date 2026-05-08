@@ -5,22 +5,27 @@ import { motion } from "framer-motion";
 import { FiMonitor, FiCode, FiPlay, FiX } from "react-icons/fi";
 import Sidebar from "../../components/Sidebar";
 import Header from "../../components/Header";
+import { portfolioData } from "../../data/portfolio";
 
 export default function Comms() {
   const [bootSequence, setBootSequence] = useState(0);
-
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    message: ""
+    message: "",
   });
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitResult, setSubmitResult] = useState(null);
 
   const handleClear = () => {
     setFormData({
       name: "",
       email: "",
-      message: ""
+      message: "",
     });
+    setErrors({});
+    setSubmitResult(null);
   };
 
   useEffect(() => {
@@ -32,6 +37,63 @@ export default function Comms() {
     ];
     return () => timeouts.forEach(clearTimeout);
   }, []);
+
+  const handleChange = (field, value) => {
+    setFormData((current) => ({
+      ...current,
+      [field]: value,
+    }));
+    setErrors((current) => ({
+      ...current,
+      [field]: "",
+    }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setErrors({});
+    setSubmitResult(null);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        setErrors(payload.errors || {});
+        setSubmitResult({
+          ok: false,
+          message: payload.message || "Unable to send your message right now.",
+        });
+        return;
+      }
+
+      setSubmitResult({
+        ok: true,
+        whatsappUrl: payload.whatsappUrl,
+        emailStatus: payload.emailStatus,
+      });
+      setFormData({
+        name: "",
+        email: "",
+        message: "",
+      });
+    } catch {
+      setSubmitResult({
+        ok: false,
+        message: "Unable to reach the secure comms endpoint.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="flex h-screen w-full bg-[#0B0F19] text-white font-mono overflow-hidden">
@@ -66,7 +128,7 @@ export default function Comms() {
               </div>
 
               {/* Terminal Body */}
-              <div className="p-8 lg:p-12 flex flex-col gap-6">
+              <form onSubmit={handleSubmit} className="p-8 lg:p-12 flex flex-col gap-6">
                 <div className="flex flex-col gap-3 text-sm mb-4">
                   <div className={`text-[#38bdf8] transition-opacity duration-300 ${bootSequence >= 1 ? 'opacity-100' : 'opacity-0'}`}>
                     &gt; Initializing secure comms link ...
@@ -88,6 +150,42 @@ export default function Comms() {
                   transition={{ duration: 0.5 }}
                   className="flex flex-col gap-8"
                 >
+                  {submitResult ? (
+                    <div
+                      className={`border px-4 py-4 text-sm ${
+                        submitResult.ok
+                          ? "border-[#38bdf8]/40 bg-[#38bdf8]/10 text-[#d8f3ff]"
+                          : "border-red-500/40 bg-red-500/10 text-red-200"
+                      }`}
+                    >
+                      <p className="font-semibold tracking-wide uppercase mb-2">
+                        {submitResult.ok ? "Packet delivered" : "Transmission failed"}
+                      </p>
+                      {submitResult.ok ? (
+                        <>
+                          <p>
+                            Your enquiry has been stored for {portfolioData.personalInfo.name}.
+                            {submitResult.emailStatus?.delivered
+                              ? " SMTP mail notification was sent."
+                              : " SMTP is not configured yet, so only local storage was updated."}
+                          </p>
+                          {submitResult.whatsappUrl ? (
+                            <a
+                              href={submitResult.whatsappUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex mt-3 border border-[#38bdf8] px-4 py-2 text-xs font-bold tracking-[0.2em] uppercase text-[#38bdf8]"
+                            >
+                              Open WhatsApp Alert
+                            </a>
+                          ) : null}
+                        </>
+                      ) : (
+                        <p>{submitResult.message}</p>
+                      )}
+                    </div>
+                  ) : null}
+
                   <div>
                     <label className="block text-[#38bdf8] text-sm mb-3">
                       [NAME]:
@@ -97,11 +195,12 @@ export default function Comms() {
                       <input
                         type="text"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e) => handleChange("name", e.target.value)}
                         placeholder="Enter identifier designation"
                         className="flex-1 bg-transparent border border-[#1f2937] p-3 text-sm text-gray-200 placeholder-gray-700 focus:outline-none focus:border-[#38bdf8] transition-colors"
                       />
                     </div>
+                    {errors.name ? <p className="mt-2 text-sm text-red-300">{errors.name}</p> : null}
                   </div>
 
                   <div>
@@ -113,11 +212,12 @@ export default function Comms() {
                       <input
                         type="email"
                         value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        onChange={(e) => handleChange("email", e.target.value)}
                         placeholder="Enter return vector"
                         className="flex-1 bg-transparent border border-[#1f2937] p-3 text-sm text-gray-200 placeholder-gray-700 focus:outline-none focus:border-[#38bdf8] transition-colors"
                       />
                     </div>
+                    {errors.email ? <p className="mt-2 text-sm text-red-300">{errors.email}</p> : null}
                   </div>
 
                   <div>
@@ -128,21 +228,24 @@ export default function Comms() {
                       <span className="text-gray-500 pt-3">&gt;_</span>
                       <textarea
                         value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        onChange={(e) => handleChange("message", e.target.value)}
                         placeholder="Input payload data ..."
                         className="flex-1 bg-transparent border border-[#1f2937] p-4 h-32 resize-none text-sm text-gray-200 placeholder-gray-700 focus:outline-none focus:border-[#38bdf8] transition-colors"
                       />
                     </div>
+                    {errors.message ? <p className="mt-2 text-sm text-red-300">{errors.message}</p> : null}
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4 mt-2">
                     <motion.button 
+                      type="submit"
+                      disabled={isSubmitting}
                       whileHover={{ scale: 1.05, backgroundColor: "#38bdf8", color: "#0d1117", boxShadow: "0 0 20px rgba(56, 189, 248, 0.3)" }}
                       whileTap={{ scale: 0.95 }}
-                      className="bg-[#38bdf8] text-[#0d1117] px-6 py-3 text-sm font-bold tracking-widest flex items-center justify-center gap-3 transition-all sm:w-auto w-full"
+                      className="bg-[#38bdf8] text-[#0d1117] px-6 py-3 text-sm font-bold tracking-widest flex items-center justify-center gap-3 transition-all sm:w-auto w-full disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       <FiPlay size={14} fill="currentColor" />
-                      [SEND_PACKET]
+                      {isSubmitting ? "[TRANSMITTING]" : "[SEND_PACKET]"}
                     </motion.button>
                     <motion.button 
                       type="button"
@@ -156,7 +259,7 @@ export default function Comms() {
                     </motion.button>
                   </div>
                 </motion.div>
-              </div>
+              </form>
             </motion.div>
           </div>
         </div>
